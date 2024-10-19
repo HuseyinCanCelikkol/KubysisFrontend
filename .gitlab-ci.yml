@@ -4,6 +4,9 @@ stages:
   - build
   - deploy
 
+variables:
+  DOCKER_HOST: "unix:///var/run/docker.sock"  # Docker sock üzerinden bağlantı
+
 build:
   stage: build
   script:
@@ -15,17 +18,8 @@ build:
 
 deploy:
   stage: deploy
-  image: alpine:latest
-  before_script:
-    - apt-get update && apt-get install -y openssh-client
-    - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
   script:
-    - ssh-keyscan -H 31.57.154.163 >> ~/.ssh/known_hosts
-    - scp -r dist/* root@31.57.154.163:/var/www/kubysisfrontend/
-    - ssh root@31.57.154.163 "
-        docker stop kubysisfrontend || true &&
-        docker rm kubysisfrontend || true &&
-        docker run -d --name kubysisfrontend -p 3000:80 -v /var/www/kubysisfrontend:/usr/share/nginx/html nginx:alpine
-      "
+    - docker stop kubysisfrontend || true
+    - docker rm kubysisfrontend || true
+    - docker build -t kubysisfrontend:latest .
+    - docker run -d --name kubysisfrontend -p 3000:80 kubysisfrontend:latest
