@@ -1,35 +1,26 @@
-image: docker:latest
-
-services:
-  - docker:dind
+image: node:18
 
 stages:
   - build
-  - push
   - deploy
 
 variables:
-  DOCKER_HOST: "unix:///var/run/docker.sock"  # Docker sock ile bağlantı
-  IMAGE_NAME: "gitlabcr.kubysis.com/kubysisfrontend:latest"
+  DOCKER_HOST: "unix:///var/run/docker.sock"  # Docker sock üzerinden bağlantı
 
 build:
   stage: build
   script:
-    - docker build -t $IMAGE_NAME .
+    - npm install
+    - npm run build
   artifacts:
     paths:
       - dist/
 
-push:
-  stage: push
-  script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker push $IMAGE_NAME
-
 deploy:
   stage: deploy
+  image: docker:stable
   script:
-    - docker pull $IMAGE_NAME
     - docker stop kubysisfrontend || true
     - docker rm kubysisfrontend || true
-    - docker run -d --name kubysisfrontend -p 3000:80 $IMAGE_NAME
+    - docker build -t kubysisfrontend:latest .
+    - docker run -d --name kubysisfrontend -p 3000:80 kubysisfrontend:latest
