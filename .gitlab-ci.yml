@@ -18,6 +18,7 @@ build:
 
 deploy:
   stage: deploy
+  image: docker:stable
   script:
     - docker stop kubysisfrontend || true
     - docker rm kubysisfrontend || true
