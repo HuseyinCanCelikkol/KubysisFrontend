@@ -1,0 +1,31 @@
+image: node:18
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  script:
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+  script:
+    - ssh-keyscan -H 31.57.154.163 >> ~/.ssh/known_hosts
+    - scp -r dist/* root@31.57.154.163:/var/www/kubysisfrontend/
+    - ssh root@31.57.154.163 "
+        docker stop kubysisfrontend || true &&
+        docker rm kubysisfrontend || true &&
+        docker run -d --name kubysisfrontend -p 3000:80 -v /var/www/kubysisfrontend:/usr/share/nginx/html nginx:alpine
+      "
