@@ -1,32 +1,29 @@
-# 1. Node tabanlı imaj kullan
+# 1. Node tabanlı image kullan
 FROM node:18-alpine as build
 
 # 2. Çalışma dizinini ayarla
 WORKDIR /app
 
-# 3. package.json ve package-lock.json dosyalarını kopyala
+# 3. package.json ve bağımlılıkları yükle
 COPY package*.json ./
-
-# 4. Bağımlılıkları yükle
 RUN npm install
 
-# 5. Tüm proje dosyalarını kopyala
+# 4. Tüm proje dosyalarını kopyala ve derle
 COPY . .
-
-# 6. Projeyi derle
 RUN npm run build
 
-# 7. Nginx tabanlı imaja geç
-FROM nginx:alpine
+# 5. HTTP-Server ile çalıştır
+FROM node:18-alpine
 
-# 8. Derlenmiş dosyaları kopyala
-COPY --from=build /app/dist /usr/share/nginx/html
+# 6. HTTP-Server'ı global olarak yükle
+RUN npm install -g http-server
 
-# 9. Nginx default.conf dosyasını ekle
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+# 7. Derlenmiş dosyaları çalışma dizinine al
+WORKDIR /app
+COPY --from=build /app/dist .
 
-# 10. Port aç
-EXPOSE 80
+# 8. 3000 portunu aç
+EXPOSE 3000
 
-# 11. Nginx çalıştır
-CMD ["nginx", "-g", "daemon off;"]
+# 9. HTTP-Server ile projeyi sun
+CMD ["http-server", "-p", "3000"]
