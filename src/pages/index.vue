@@ -49,7 +49,7 @@
 
 
 <script>
-import kubysisLogo from "@/assets/kubysisLight.png";
+import kubysisLogo from "@/assets/kubysislight.png";
 
 
 import { useToast } from "vue-toastification";

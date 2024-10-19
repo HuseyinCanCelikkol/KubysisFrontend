@@ -85,8 +85,8 @@
 </template>
 
 <script>
-import kubysisLogo from "@/assets/kubysisLight.png";
-import kubysisIcon from "@/assets/Kubysis-icon.svg";
+import kubysisLogo from "@/assets/kubysislight.png";
+import kubysisIcon from "@/assets/kubysis-icon.svg";
 
 export default {
   name: "Sidebar",

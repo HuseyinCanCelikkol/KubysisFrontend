@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import kubysisLogo from "@/assets/kubysisLight.png";
+import kubysisLogo from "@/assets/kubysislight.png";
 export default {
   name: "Dashboard",
 
