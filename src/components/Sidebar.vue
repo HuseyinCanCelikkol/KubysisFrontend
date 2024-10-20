@@ -71,7 +71,7 @@
               <v-list-item
                 prepend-icon="mdi-logout"
                 title="Çıkış yap"
-                @click="navigateTo('/Login')"
+                @click="logout"
               ></v-list-item>
             </v-list>
           </div>
@@ -99,6 +99,18 @@ export default {
     };
   },
   methods: {
+    logout() {
+      // Çerezleri sil
+      this.deleteCookie('authToken');  // Token çerezi
+      this.deleteCookie('userInfo');   // Kullanıcı bilgisi çerezi varsa
+
+      // Login sayfasına yönlendir
+      window.location.href = "/";
+    },
+    deleteCookie(name) {
+      // Çerezi silmek için geçmiş bir tarih belirle
+      document.cookie = name + '=; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Path=/;';
+    },
     navigateTo(routeName) {
       if (this.$route.path !== routeName) {
         this.$router.push({ name: routeName }); // Route'u path ile yönlendiriyoruz

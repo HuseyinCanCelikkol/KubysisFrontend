@@ -62,6 +62,16 @@ export default {
 
     return { toast };
   },
+  mounted() {
+    // authToken ve userInfo çerezlerini kontrol et
+    const authToken = this.getCookie('authToken');
+    const userInfo = this.getCookie('userInfo');
+
+    // Eğer çerezler varsa dashboard'a yönlendir
+    if (authToken && userInfo) {
+      this.$router.push('/dashboard');
+    }
+  },
   data() {
     return {
       kubysisLogo,
@@ -78,7 +88,14 @@ export default {
       },
     };
   },
+
   methods: {
+    getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    },
     async login() {
       try {
         // Giriş isteğini yap
