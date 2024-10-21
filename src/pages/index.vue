@@ -47,6 +47,10 @@
   </v-container>
 </template>
 
+<route lang="yaml">
+  meta:
+    layout: loginLayout
+  </route>
 
 <script>
 import kubysisLogo from "@/assets/kubysislight.png";
