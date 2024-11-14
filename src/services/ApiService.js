@@ -23,13 +23,13 @@ const ApiService = {
 
   // Token'ı çereze ekle
   setToken(token) {
-    Cookies.set('authToken', token, { expires: 7 }); // 7 gün boyunca saklar
+    Cookies.set('authToken', token, { expires: 1 }); // 7 gün boyunca saklar
   },
 
   // Kullanıcı bilgilerini çereze şifreleyerek ekle
   setUserInfo(userInfo) {
     const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(userInfo), this.encryptionKey).toString();
-    Cookies.set('userInfo', encryptedData, { expires: 7 });
+    Cookies.set('userInfo', encryptedData, { expires: 1 });
   },
 
   // Çerezdeki kullanıcı bilgilerini al ve deşifre et

@@ -10,7 +10,8 @@
         expand-on-hover
       >
         <v-list>
-          <v-list-item>
+          <v-list-item @click="$router.push('/dashboard')"
+          class="clickable">
             <!-- Fare üzerinde değilken kubysisIcon göster -->
             <v-img
               :src="kubysisIcon"
@@ -51,16 +52,6 @@
             prepend-icon="mdi-folder"
             title="Bağış Yönetimi"
             @click="navigateTo('/Donation/DonationList')"
-          ></v-list-item>
-          <v-list-item
-            prepend-icon="mdi-account-multiple"
-            title="Shared with me"
-            @click="navigateTo('shared')"
-          ></v-list-item>
-          <v-list-item
-            prepend-icon="mdi-star"
-            title="Starred"
-            @click="navigateTo('starred')"
           ></v-list-item>
         </v-list>
         <v-divider></v-divider>
