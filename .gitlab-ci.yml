@@ -23,4 +23,4 @@ deploy:
     - docker stop kubysisfrontend || true
     - docker rm kubysisfrontend || true
     - docker build -t kubysisfrontend:latest .
-    - docker run -d --name kubysisfrontend -p 3000:80 --network nginxproxymanager_default kubysisfrontend:latest
+    - docker run -d --name kubysisfrontend -p 3000:80 --network nginxproxymanager_default --volume shared_app:/app kubysisfrontend:latest
