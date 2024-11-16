@@ -106,6 +106,7 @@ export default {
         const response = await this.$apiservice.post("account/login", {
           email: this.email,
           password: this.password,
+          licenseKey: this.licenseKey
         });
         if (response.status === 200 && response.data.responseCode === 0) {
           const token = response.data.data.token;

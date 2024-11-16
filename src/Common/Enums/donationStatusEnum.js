@@ -10,7 +10,7 @@ const DonationStatusEnum = Object.freeze({
   // Enum ile isimleri eşleştiren yapı
   const DonationStatusWithName = Object.freeze([
     { id: DonationStatusEnum.NOT_SENT, name: "Gönderilmedi" },
-    { id: DonationStatusEnum.PREPARING_BANNER, name: "Afiş Hazırlanıyor" },
+    { id: DonationStatusEnum.PREPARING_BANNER, name: "Afiş Hazırlandı" },
     { id: DonationStatusEnum.SENT, name: "Gönderildi" },
   ]);
   

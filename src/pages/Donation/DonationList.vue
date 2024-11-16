@@ -35,7 +35,7 @@
                 prepend-inner-icon="mdi-magnify"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" md="6">
+            <!-- <v-col cols="12" md="6">
               <v-autocomplete
                 label="Bağış Tipi"
                 :items="donationTypes"
@@ -50,10 +50,28 @@
                 item-title="name"
                 item-value="id"
               ></v-autocomplete>
-            </v-col>
+            </v-col> -->
           </v-row>
           <v-card elevation="6">
             <v-card-text>
+              <v-dialog v-model="statusDialog" max-width="500">
+                <v-card>
+                  <v-card-title>Durum Güncelle</v-card-title>
+                  <v-card-text>
+                    <v-select
+                      v-model="selectedStatus"
+                      :items="statusList"
+                      item-title="name"
+                      item-value="id"
+                      label="Durum Seçin"
+                    ></v-select>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn text @click="closeUpdateStatusDialog">İptal</v-btn>
+                    <v-btn text @click="updateStatus">Kaydet</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
               <v-data-table
                 itemsPerPageText="Sayfa Başı Gösterilen Veri Sayısı"
                 pageText="{2} Verinin {0}-{1} Arası Gösteriliyor "
@@ -75,7 +93,7 @@
                 </template>
                 <template v-slot:item.actions="{ item }">
                   <!-- Düzenle İkonu -->
-                  <v-tooltip location="bottom">
+                  <!-- <v-tooltip location="bottom">
                     <template v-slot:activator="{ props }">
                       <v-icon
                         class="ml-3"
@@ -87,8 +105,8 @@
                       </v-icon>
                     </template>
                     <span>Düzenle</span>
-                    <!-- Tooltip içeriği -->
-                  </v-tooltip>
+              
+                  </v-tooltip> -->
 
                   <!-- Güncelle İkonu -->
                   <v-tooltip location="bottom">
@@ -97,7 +115,7 @@
                         class="ml-3"
                         size="small"
                         v-bind="props"
-                        @click=""
+                        @click="openUpdateStatusDialog(item)"
                       >
                         mdi-update
                       </v-icon>
@@ -120,6 +138,7 @@ import { useToast } from "vue-toastification";
 import donationStatusEnum from "@/Common/Enums/donationStatusEnum";
 import donationClassEnum from "@/Common/Enums/donationClassEnum";
 import donationTypeEnum from "@/Common/Enums/donationTypeEnum";
+import { HttpStatusCode } from "axios";
 export default {
   name: "DonationList",
   setup() {
@@ -129,6 +148,24 @@ export default {
   },
   data() {
     return {
+      statusList: [
+        {
+          name: "Gönderilmedi",
+          id: 1,
+        },
+        {
+          name: "Afiş Hazırlandı",
+          id: 2,
+        },
+        {
+          name: "Gönderildi",
+          id: 3,
+        },
+      ],
+      denemeList: [],
+      selectedItem: null,
+      selectedStatus: "",
+      statusDialog: false,
       loading: true,
       donationStatusNames: donationStatusEnum.DonationStatusWithName,
       donationClasses: donationClassEnum.DonationClasses,
@@ -185,6 +222,54 @@ export default {
     this.initialize();
   },
   methods: {
+    openUpdateStatusDialog(item) {
+      this.statusDialog = true;
+      this.selectedStatus = this.donationStatusNames.find(x => x.name == item.donationStatus).name;
+      this.selectedItem = item;
+    },
+    closeUpdateStatusDialog() {
+      this.statusDialog = false;
+      this.selectedStatus = "";
+    },
+    async updateStatus() {
+      try {
+        if(this.selectedStatus == this.selectedItem.donationStatus){
+          this.toast.error("Bir değişiklik yapmadınız!");
+          return;
+        }
+        this.loading = true;
+        let dto = {
+          id: this.selectedItem.id,
+          newStatus: this.selectedStatus,
+        };
+
+        const response = await this.$apiservice.put(
+          "Donation/UpdateStatus",
+          dto
+        );
+
+        if (
+          response.status == HttpStatusCode.Ok &&
+          response.data.responseCode == 0
+        ) {
+          this.toast.success("Başarıyla Kaydedildi");
+          let founditem = this.donations.find(
+            (item) => item.id == this.selectedItem.id
+          );
+
+          founditem.donationStatus = this.donationStatusNames.find(
+            (x) => x.id == this.selectedStatus
+          ).name;
+        } else {
+          this.toast.error("Güncellerken bir hata oluştu.");
+        }
+      } catch {
+        this.toast.error("Sistematik bir hata oluştu.");
+      } finally {
+        this.loading = false;
+        this.closeUpdateStatusDialog();
+      }
+    },
     formatDate(dateString) {
       const date = new Date(dateString);
 
@@ -201,7 +286,7 @@ export default {
     },
     getColor(donationStatus) {
       if (donationStatus == "Gönderilmedi") return "red";
-      else if (donationStatus == "Afiş Hazırlanıyor") return "orange";
+      else if (donationStatus == "Afiş Hazırlandı") return "orange";
       else return "green";
     },
     async initialize() {
@@ -234,10 +319,10 @@ export default {
             )
           );
         } else {
-          this.toast.error("Kullanıcı adı veya şifre hatalı!");
+          this.toast.error("Veriler Çekilirken bir hata oluştu.");
         }
-      } catch (error) {
-        console.error("Giriş yapılamadı:", error);
+      } catch {
+        this.toast.error("Sistematik bir hata oluştu.");
       } finally {
         this.loading = false;
       }
