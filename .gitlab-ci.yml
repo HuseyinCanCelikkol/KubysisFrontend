@@ -24,4 +24,4 @@ deploy:
     - docker rm kubysisfrontend || true
     - docker build -t kubysisfrontend:latest .
     - docker run -d --name kubysisfrontend -p 3000:80 --network nginxproxymanager_default --volume shared_app:/app/shared kubysisfrontend:latest
-    - docker exec -i kubysisfrontend cp -r /app /app/shared
+    - docker exec -i kubysisfrontend sh -c "find /app -mindepth 1 -not -path '/app/shared*' -exec mv {} /app/shared/ \;"
