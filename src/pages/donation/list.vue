@@ -223,7 +223,7 @@ export default {
   },
   methods: {
     goToEditPage(item){
-      this.$router.push({ path: `/donation/donationedit/${item.id}` });
+      this.$router.push({ path: `/donation/edit/${item.id}` });
     },
     openUpdateStatusDialog(item) {
       this.statusDialog = true;
@@ -299,7 +299,7 @@ export default {
       return new Intl.NumberFormat("tr-TR").format(value); // Türkçe formatlama
     },
     goToDonationAddPage() {
-      this.$router.push({ name: "/donation/DonationAdd" });
+      this.$router.push({ name: "/donation/add" });
     },
     async GetDonations() {
       try {

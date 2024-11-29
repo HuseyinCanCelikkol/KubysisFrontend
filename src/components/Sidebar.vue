@@ -45,13 +45,13 @@
           <v-list-item
             prepend-icon="mdi-home"
             title="Ana Sayfa"
-            @click="navigateTo('/Dashboard')"
+            @click="navigateTo('/dashboard')"
           ></v-list-item>
           <v-divider></v-divider>
           <v-list-item
             prepend-icon="mdi-folder"
             title="Bağış Yönetimi"
-            @click="navigateTo('/donation/DonationList')"
+            @click="navigateTo('/donation/list')"
           ></v-list-item>
         </v-list>
         <v-divider></v-divider>

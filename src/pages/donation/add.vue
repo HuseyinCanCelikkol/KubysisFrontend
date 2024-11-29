@@ -14,14 +14,14 @@
             );
           "
         >
-          <v-toolbar-title>Bağış Düzenle</v-toolbar-title>
+          <v-toolbar-title>Bağış Ekle</v-toolbar-title>
         </v-toolbar>
         <v-card-text>
-          <v-form ref="donationUpdateForm">
+          <v-form ref="donationAddForm">
             <v-row>
               <v-col cols="12" md="4">
                 <v-text-field
-                  v-model="donationUpdateDto.nameAndSurname"
+                  v-model="donationAddDto.nameAndSurname"
                   label="Bağışçı Ad Soyad"
                   hint="Bağışçıya Dair Ad Soyad Bilgisi"
                   :rules="[rules.required]"
@@ -29,7 +29,7 @@
               </v-col>
               <v-col cols="12" md="4">
                 <v-text-field
-                  v-model="donationUpdateDto.phoneNumber"
+                  v-model="donationAddDto.phoneNumber"
                   label="Telefon Numarası"
                   placeholder="+90555-1234567"
                   type="number"
@@ -42,7 +42,7 @@
                 <v-autocomplete
                   label="Bağış Tipi"
                   :items="donationTypes"
-                  v-model="donationUpdateDto.donationType"
+                  v-model="donationAddDto.donationType"
                   item-title="name"
                   item-value="id"
                   :rules="[rules.required]"
@@ -52,7 +52,7 @@
                 <v-autocomplete
                   label="Bağış Türü"
                   :items="donationClasses"
-                  v-model="donationUpdateDto.donationClass"
+                  v-model="donationAddDto.donationClass"
                   item-title="name"
                   item-value="id"
                   :rules="[rules.required]"
@@ -60,7 +60,7 @@
               </v-col>
               <v-col cols="12" md="4">
                 <v-text-field
-                  v-model="donationUpdateDto.amount"
+                  v-model="donationAddDto.amount"
                   label="Bağış Miktarı"
                   type="number"
                   hide-spin-buttons
@@ -70,7 +70,7 @@
               </v-col>
               <v-col cols="12" md="4">
                 <v-textarea
-                  v-model="donationUpdateDto.description"
+                  v-model="donationAddDto.description"
                   label="Açıklama"
                   rows="1"
                   auto-grow
@@ -83,7 +83,7 @@
         <v-card-actions>
           <v-spacer />
           <v-btn color="error" @click="goToPreviousPage">Geri Dön</v-btn>
-          <v-btn color="success" @click="validateDonationUpdateForm">Ekle</v-btn>
+          <v-btn color="success" @click="validateDonationAddForm">Ekle</v-btn>
         </v-card-actions>
       </v-card>
     </v-col>
@@ -94,7 +94,7 @@ import { useToast } from "vue-toastification";
 import donationStatusEnum from "@/Common/Enums/donationStatusEnum";
 import donationClassEnum from "@/Common/Enums/donationClassEnum";
 import donationTypeEnum from "@/Common/Enums/donationTypeEnum";
-import DonationUpdateDto from "@/Common/Dtos/DonationUpdateDto";
+import DonationAddDto from "@/Common/Dtos/DonationAddDto";
 export default {
   name: "DonationList",
   setup() {
@@ -102,16 +102,12 @@ export default {
 
     return { toast };
   },
-  async created() {
-    await this.initialize();
-  },
   data() {
     return {
       rules: {
         required: (value) => !!value || "Zorunlu Alan",
       },
-      donationId: this.$route.params.id,
-      donationUpdateDto: new DonationUpdateDto(),
+      donationAddDto: new DonationAddDto(),
       donationStatusNames: donationStatusEnum.DonationStatusWithName,
       donationClasses: donationClassEnum.DonationClasses,
       donationTypes: donationTypeEnum.DonationTypes,
@@ -119,36 +115,25 @@ export default {
     };
   },
   methods: {
-    async initialize() {
-      await this.GetDonation();
-    },
-    async GetDonation() {
-      try {
-        const response = await this.$apiservice.get(
-          "Donation/GetDonationById?donationId=" + this.donationId
-        );
-        this.donationUpdateDto = response.data.data;
-        if (response.status == 200 && response.data.responseCode == 0) {
-        } else {
-          this.toast.error("Bağış Yüklenirken Bir Hata Oluştu.");
-        }
-      } catch {}
-    },
-    async validateDonationUpdateForm() {
-      const isValid = await this.$refs.donationUpdateForm.validate();
+    async validateDonationAddForm() {
+      const isValid = await this.$refs.donationAddForm.validate();
 
       if (isValid.valid) {
-        await this.UpdateDonation();
+        await this.AddDonation();
       }
     },
-    async UpdateDonation() {
+    async AddDonation() {
       try {
-        const response = await this.$apiservice.put(
-          "Donation/UpdateDonation",
-          this.donationUpdateDto
+        this.donationAddDto.donationStatus = 1;
+        this.donationAddDto.createUserId = this.userInfo.id;
+        this.donationAddDto.companyId = this.userInfo.companyId;
+
+        const response = await this.$apiservice.post(
+          "Donation/AddDonation",
+          this.donationAddDto
         );
         if (response.status == 200 && response.data.responseCode == 0) {
-          this.toast.success("Bağış Başarıyla Düzenlendi.");
+          this.toast.success("Bağış Başarıyla Eklendi.");
           this.goToPreviousPage();
         } else {
           this.toast.error("Bağış Eklenirken Bir Hata Oluştu.");
@@ -160,7 +145,7 @@ export default {
       }
     },
     goToPreviousPage() {
-      this.$router.push({ name: "/donation/DonationList" });
+      this.$router.push({ name: "/donation/list" });
     },
     formatNumber(value) {
       return new Intl.NumberFormat("tr-TR").format(value); // Türkçe formatlama
