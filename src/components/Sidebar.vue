@@ -51,7 +51,7 @@
           <v-list-item
             prepend-icon="mdi-folder"
             title="Bağış Yönetimi"
-            @click="navigateTo('/Donation/DonationList')"
+            @click="navigateTo('/donation/DonationList')"
           ></v-list-item>
         </v-list>
         <v-divider></v-divider>

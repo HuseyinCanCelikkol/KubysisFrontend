@@ -93,20 +93,20 @@
                 </template>
                 <template v-slot:item.actions="{ item }">
                   <!-- Düzenle İkonu -->
-                  <!-- <v-tooltip location="bottom">
+                  <v-tooltip location="bottom">
                     <template v-slot:activator="{ props }">
                       <v-icon
                         class="ml-3"
                         size="small"
                         v-bind="props"
-                        @click=""
+                        @click="goToEditPage(item)"
                       >
                         mdi-pencil
                       </v-icon>
                     </template>
                     <span>Düzenle</span>
               
-                  </v-tooltip> -->
+                  </v-tooltip>
 
                   <!-- Güncelle İkonu -->
                   <v-tooltip location="bottom">
@@ -222,6 +222,9 @@ export default {
     this.initialize();
   },
   methods: {
+    goToEditPage(item){
+      this.$router.push({ path: `/donation/donationedit/${item.id}` });
+    },
     openUpdateStatusDialog(item) {
       this.statusDialog = true;
       this.selectedStatus = this.donationStatusNames.find(x => x.name == item.donationStatus).name;
@@ -247,7 +250,6 @@ export default {
           "Donation/UpdateStatus",
           dto
         );
-
         if (
           response.status == HttpStatusCode.Ok &&
           response.data.responseCode == 0
@@ -263,7 +265,8 @@ export default {
         } else {
           this.toast.error("Güncellerken bir hata oluştu.");
         }
-      } catch {
+      } catch(error) {
+        console.log(error);
         this.toast.error("Sistematik bir hata oluştu.");
       } finally {
         this.loading = false;
@@ -296,7 +299,7 @@ export default {
       return new Intl.NumberFormat("tr-TR").format(value); // Türkçe formatlama
     },
     goToDonationAddPage() {
-      this.$router.push({ name: "/Donation/DonationAdd" });
+      this.$router.push({ name: "/donation/DonationAdd" });
     },
     async GetDonations() {
       try {
