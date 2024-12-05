@@ -45,7 +45,7 @@
           <v-list-item
             prepend-icon="mdi-home"
             title="Ana Sayfa"
-            @click="navigateTo('/dashboard')"
+            @click="$router.push('/dashboard')"
           ></v-list-item>
           <v-divider></v-divider>
           <v-list-item
