@@ -4,7 +4,7 @@ import CryptoJS from 'crypto-js';
 
 const ApiService = {
   axiosInstance: null,
-  encryptionKey: 'DsK2cZ7sp9Mz6AP7WUI0kQVe8fSohb6d', // Şifreleme anahtarı, güvenli bir şekilde saklanmalıdır
+  encryptionKey: 'custom-encryption-key-must-be-fetched-from-in-your-secret', // Şifreleme anahtarı, güvenli bir şekilde saklanmalıdır
 
   init(baseURL) {
     this.axiosInstance = axios.create({
